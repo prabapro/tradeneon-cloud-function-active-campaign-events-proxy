@@ -20,6 +20,7 @@
 .env.example
 .editorconfig
 .prettierignore
+cf-active-campaign-events.code-workspace
 README.md
 
 # Folders

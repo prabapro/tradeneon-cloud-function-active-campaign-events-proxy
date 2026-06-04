@@ -1,22 +1,22 @@
 {
-	"name": "gcf-activecampaign-events-proxy",
-	"version": "1.0.0",
-	"description": "ActiveCampaign events proxy — Google Cloud Functions Gen 2",
-	"main": "index.js",
-	"engines": {
-		"node": ">=22"
-	},
-	"scripts": {
-		"start": "functions-framework --target=activeCampaignEventsProxy",
-		"dev": "functions-framework --target=activeCampaignEventsProxy --port=8080",
-		"predeploy": "node scripts/generate-env-yaml.js",
-		"deploy": "gcloud functions deploy active-campaign-events-proxy --project=tradeneon-ac-tracking --runtime=nodejs22 --region=europe-west3 --source=. --entry-point=activeCampaignProxy --trigger-http --allow-unauthenticated --env-vars-file .env.yaml"
-	},
-	"dependencies": {
-		"@google-cloud/functions-framework": "^5.0.2",
-		"axios": "^1.17.0"
-	},
-	"devDependencies": {
-		"dotenv": "^17.4.2"
-	}
+    "name": "gcf-activecampaign-events-proxy",
+    "version": "1.0.0",
+    "description": "ActiveCampaign events proxy — Google Cloud Functions Gen 2",
+    "main": "index.js",
+    "engines": {
+        "node": ">=22"
+    },
+    "scripts": {
+        "start": "functions-framework --target=activeCampaignEventsProxy",
+        "dev": "functions-framework --target=activeCampaignEventsProxy --port=8080",
+        "predeploy": "node scripts/generate-env-yaml.js",
+        "deploy": "gcloud functions deploy active-campaign-events-proxy --project=tradeneon-ac-tracking --runtime=nodejs22 --region=europe-west3 --source=. --entry-point=activeCampaignEventsProxy --trigger-http --allow-unauthenticated --env-vars-file .env.yaml"
+    },
+    "dependencies": {
+        "@google-cloud/functions-framework": "^5.0.2",
+        "axios": "^1.17.0"
+    },
+    "devDependencies": {
+        "dotenv": "^17.4.2"
+    }
 }
