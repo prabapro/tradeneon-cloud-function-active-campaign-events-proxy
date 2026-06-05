@@ -6,7 +6,9 @@ const {
     sendEvent,
     getEmailByContactId,
     getEmailByHash,
+    syncUtmParams,
 } = require("./activecampaign");
+const { extractUtmParams } = require("./utm");
 
 async function handleRequest(req, res) {
     const { action, hash, contactId, email, eventName, eventData } = req.query;
@@ -20,25 +22,41 @@ async function handleRequest(req, res) {
     }
 
     try {
-        let acResponse;
+        let resolvedEmail = email;
 
-        if (email) {
-            acResponse = await sendEvent(email, eventName, eventData);
-        } else if (contactId) {
-            const resolvedEmail = await getEmailByContactId(contactId);
-            acResponse = await sendEvent(resolvedEmail, eventName, eventData);
-        } else if (hash) {
-            const resolvedEmail = await getEmailByHash(hash);
-            acResponse = await sendEvent(resolvedEmail, eventName, eventData);
-        } else {
+        if (!resolvedEmail && contactId) {
+            resolvedEmail = await getEmailByContactId(contactId);
+        } else if (!resolvedEmail && hash) {
+            resolvedEmail = await getEmailByHash(hash);
+        }
+
+        if (!resolvedEmail) {
             return res
                 .status(400)
                 .send("Missing one of: email, contactId, hash");
         }
 
-        return res.status(200).json(acResponse);
+        const utmParams = extractUtmParams(req.query);
+        const hasUtmParams = Object.keys(utmParams).length > 0;
+
+        const [acEventResponse, acUtmResponse] = await Promise.all([
+            sendEvent(resolvedEmail, eventName, eventData),
+            hasUtmParams
+                ? syncUtmParams(resolvedEmail, utmParams)
+                : Promise.resolve(null),
+        ]);
+
+        console.log(`[event] "${eventName}" tracked for ${resolvedEmail}`);
+
+        if (acUtmResponse !== null) {
+            console.log(
+                `[utm] ${resolvedEmail} updated with ${JSON.stringify(utmParams)}`,
+            );
+        }
+
+        return res.status(200).json(acEventResponse);
     } catch (err) {
-        console.error("Error handling request:", err.message);
+        console.error(`[error] ${err.message}`);
         return res.status(500).send("Internal error");
     }
 }
