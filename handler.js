@@ -46,18 +46,17 @@ async function handleRequest(req, res) {
                 : Promise.resolve(null),
         ]);
 
-        console.log(
-            "AC event tracking response:",
-            JSON.stringify(acEventResponse),
-        );
+        console.log(`[event] "${eventName}" tracked for ${resolvedEmail}`);
 
         if (acUtmResponse !== null) {
-            console.log("AC UTM sync response:", JSON.stringify(acUtmResponse));
+            console.log(
+                `[utm] ${resolvedEmail} updated with ${JSON.stringify(utmParams)}`,
+            );
         }
 
         return res.status(200).json(acEventResponse);
     } catch (err) {
-        console.error("Error handling request:", err.message);
+        console.error(`[error] ${err.message}`);
         return res.status(500).send("Internal error");
     }
 }
